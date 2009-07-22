@@ -1,0 +1,25 @@
+Changes required to XSB source in order to compile XSB
+(under Visual C++ 2005 Express Edition):
+------------------------------------------------------
+
+1. In file context.h:
+
+Comment out the <windows.h> and <sql.h> includes.
+Usually these are after line 128, with the following form:
+
+//BELOW INCLUDES ARE FOR SQL Interfaces
+#ifdef CYGWIN
+#define FAR
+#include "sql.h"
+#else
+#ifdef WIN_NT
+//#include <windows.h>
+//#include <sql.h>
+#endif
+#endif
+//end of SQL related includes.
+
+2. In cinterf.h:
+
+Comment out the redefinition of string_find. It somehow differs from
+previous declarations.
