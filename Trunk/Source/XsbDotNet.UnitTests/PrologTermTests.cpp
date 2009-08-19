@@ -25,13 +25,14 @@
 
 void XsbDotNet::UnitTests::PrologTermTests::SetUp()
 {
-    engine = gcnew XsbDotNet::XsbPrologEngine();
-    //engine = XsbDotNet::XsbPrologEngine::Instance;
+	XsbDotNet::PrologEngine::InitXsb("D:\\Tools\\XSB");
+	engine = XsbDotNet::PrologEngine::CreateThread();
+    //engine = XsbDotNet::PrologEngine::Instance;
 }
 
 void XsbDotNet::UnitTests::PrologTermTests::TearDown()
 {
-    XsbDotNet::XsbPrologEngine::CloseXsb();
+    XsbDotNet::PrologEngine::CloseXsb();
 }
 
 void XsbDotNet::UnitTests::PrologTermTests::PrologTermConstructors()
@@ -69,7 +70,7 @@ void XsbDotNet::UnitTests::PrologTermTests::PrologQueries()
     QueryHandle ^result = engine->Query("member(X,[1,2,3]).");
     for each (XsbDotNet::PrologAnswer ^answer in result)
     {
-        System::Console::Out->WriteLine(answer->AnswerTerm->GetFunctorArgument(1)->GetIntValue());
+		System::Diagnostics::Trace::WriteLine(answer->AnswerTerm->GetFunctorArgument(1)->GetIntValue());
     }
 }
 

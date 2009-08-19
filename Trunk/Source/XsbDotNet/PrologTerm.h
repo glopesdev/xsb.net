@@ -24,8 +24,8 @@
 
 #include "cinterf.h"
 
-namespace XsbDotNet {
-
+namespace XsbDotNet
+{
     public ref class PrologTerm
     {
     private:

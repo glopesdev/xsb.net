@@ -31,7 +31,7 @@ namespace XsbDotNet {
         public ref class PrologTermTests
         {
         private:
-            XsbDotNet::XsbPrologEngine ^engine;
+            XsbDotNet::PrologEngine ^engine;
         public:
             void SetUp();
             void TearDown();

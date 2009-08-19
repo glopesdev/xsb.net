@@ -24,8 +24,8 @@
 
 #include "PrologTerm.h"
 
-namespace XsbDotNet {
-
+namespace XsbDotNet
+{
     public ref class PrologAnswer
     {
     private:

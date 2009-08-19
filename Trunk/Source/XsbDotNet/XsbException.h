@@ -1,7 +1,7 @@
 #pragma once
 
-namespace XsbDotNet {
-
+namespace XsbDotNet
+{
     public ref class XsbException
         : public System::Exception
     {

@@ -21,7 +21,7 @@
  *************************************************************************/
 
 #include "StdAfx.h"
-#include "XsbPrologEngine.h"
+#include "PrologEngine.h"
 #include "XsbException.h"
 
 using namespace XsbDotNet;
@@ -31,66 +31,50 @@ using namespace System::Runtime::InteropServices;
 [DllImport("managed.dll")]
 extern void set_managed_callback(CTXTdeclc PrologCallback ^callback);
 
-XsbPrologEngine::XsbPrologEngine()
+PrologEngine::PrologEngine(CTXTdecl):
+#ifdef MULTI_THREAD
+th(CTXT),
+#endif
+managedPredicates(gcnew Dictionary<System::String ^, PrologPredicate ^>())
 {
-#ifdef MULTI_THREAD
-    if (main_th == NULL)
-    {
-#endif
-        managedPredicates = gcnew Dictionary<System::String ^, PrologPredicate ^>();
-        System::String ^xsb_home = System::Environment::GetEnvironmentVariable("XSB_HOME");
-        System::IntPtr cstring = Marshal::StringToHGlobalAnsi(xsb_home);
-		char *argv[1] = { (char *)cstring.ToPointer() };
-		try
-		{
-			if (xsb_init(1, argv) != XSB_SUCCESS)
-			{
-				throw gcnew XsbException(
-					"Failed to initialize XSB engine.\n" +
-					"Error code: " + gcnew System::String(xsb_get_init_error_type()) + "\n" +
-					"Error message: " + gcnew System::String(xsb_get_init_error_message()));
-			}
-		}
-		finally { Marshal::FreeHGlobal(cstring); }
-#ifdef MULTI_THREAD
-        main_th = xsb_get_main_thread();
-    }
-    pin_ptr<th_context *> p_th = &th;
-    xsb_ccall_thread_create(main_th, p_th);
-#endif
     Command("ensure_loaded(managed).");
-    callback = gcnew PrologCallback(this, &XsbPrologEngine::CallManagedPredicate);
+    callback = gcnew PrologCallback(this, &PrologEngine::CallManagedPredicate);
     set_managed_callback(CTXTc callback);
 }
 
 #ifdef MULTI_THREAD
-XsbPrologEngine::~XsbPrologEngine()
+PrologEngine::~PrologEngine()
 {
+	if (this == mainThread)
+	{
+		throw gcnew System::InvalidOperationException("The main engine cannot be disposed directly. Please call the CloseXsb method instead.");
+	}
+
     xsb_kill_thread(CTXT);
 }
 #endif
 
-PrologTerm ^ XsbPrologEngine::CreateTerm()
+PrologTerm ^ PrologEngine::CreateTerm()
 {
     prolog_term term = p2p_new(CTXT);
     return gcnew PrologTerm(CTXTc term);
 }
 
-PrologTerm ^ XsbPrologEngine::CreateTerm(System::String ^symbol)
+PrologTerm ^ PrologEngine::CreateTerm(System::String ^symbol)
 {
     PrologTerm ^term = CreateTerm();
     term->BindAtom(symbol);
     return term;
 }
 
-PrologTerm ^ XsbPrologEngine::CreateTerm(System::String ^symbol, int arity)
+PrologTerm ^ PrologEngine::CreateTerm(System::String ^symbol, int arity)
 {
     PrologTerm ^term = CreateTerm();
     term->BindFunctor(symbol, arity);
     return term;
 }
 
-bool XsbPrologEngine::Command(System::String ^command)
+bool PrologEngine::Command(System::String ^command)
 {
     System::IntPtr cstring = Marshal::StringToHGlobalAnsi(command);
     int result = xsb_command_string(CTXTc (char *)cstring.ToPointer());
@@ -98,14 +82,14 @@ bool XsbPrologEngine::Command(System::String ^command)
     return result == 0;
 }
 
-bool XsbPrologEngine::Command(PrologTerm ^command)
+bool PrologEngine::Command(PrologTerm ^command)
 {
     prolog_term reg1 = reg_term(CTXTc 1);
     p2p_unify(CTXTc command->Term, reg1);
     return xsb_command(CTXT) == 0;
 }
 
-QueryHandle ^ XsbPrologEngine::Query(System::String ^query)
+QueryHandle ^ PrologEngine::Query(System::String ^query)
 {
     System::IntPtr cstring = Marshal::StringToHGlobalAnsi(query);
     int result = xsb_query_string(CTXTc (char *)cstring.ToPointer());
@@ -113,19 +97,19 @@ QueryHandle ^ XsbPrologEngine::Query(System::String ^query)
     return gcnew QueryHandle(CTXTc result == 0);
 }
 
-QueryHandle ^ XsbPrologEngine::Query(PrologTerm ^query)
+QueryHandle ^ PrologEngine::Query(PrologTerm ^query)
 {
     prolog_term reg1 = reg_term(CTXTc 1);
     p2p_unify(CTXTc query->Term, reg1);
     return gcnew QueryHandle(CTXTc xsb_query(CTXT) == 0);
 }
 
-void XsbPrologEngine::RegisterManagedPredicate(System::String ^name, PrologPredicate ^predicate)
+void PrologEngine::RegisterManagedPredicate(System::String ^name, PrologPredicate ^predicate)
 {
     managedPredicates->Add(name, predicate);
 }
 
-bool XsbPrologEngine::CallManagedPredicate(prolog_term term)
+bool PrologEngine::CallManagedPredicate(prolog_term term)
 {
     PrologTerm ^goal = gcnew PrologTerm(CTXTc term);
     System::String ^functor = goal->GetFunctorName();
@@ -139,14 +123,55 @@ bool XsbPrologEngine::CallManagedPredicate(prolog_term term)
     return predicate(arguments);
 }
 
-void XsbPrologEngine::CloseXsb()
+void PrologEngine::InitXsb(System::String ^xsbHome)
 {
+	System::IntPtr cstring = Marshal::StringToHGlobalAnsi(xsbHome);
+	char *argv[1] = { (char *)cstring.ToPointer() };
+	try
+	{
+		if (xsb_init(1, argv) != XSB_SUCCESS)
+		{
+			throw gcnew XsbException(
+				"Failed to initialize XSB engine.\n" +
+				"Error code: " + gcnew System::String(xsb_get_init_error_type()) + "\n" +
+				"Error message: " + gcnew System::String(xsb_get_init_error_message()));
+		}
+	}
+	finally { Marshal::FreeHGlobal(cstring); }
+
 #ifdef MULTI_THREAD
-    if (main_th != NULL)
-    {
-        xsb_close(main_th);
-    }
-#else
-    xsb_close();
+	th_context *th = xsb_get_main_thread();
 #endif
+	mainThread = gcnew PrologEngine(CTXT);
 }
+
+void PrologEngine::CloseXsb()
+{
+	if (mainThread == nullptr)
+	{
+		throw gcnew System::InvalidOperationException("The XSB engine is not initialized.");
+	}
+
+#ifdef MULTI_THREAD
+	th_context *th = mainThread->th;
+#endif
+	xsb_close(CTXT);
+	mainThread = nullptr;
+}
+
+#ifdef MULTI_THREAD
+
+PrologEngine ^ PrologEngine::CreateThread()
+{
+	if (mainThread == nullptr)
+	{
+		throw gcnew System::InvalidOperationException("The XSB engine must be initialized before creating new threads.");
+	}
+
+	th_context *th;
+    pin_ptr<th_context *> p_th = &th;
+    xsb_ccall_thread_create(mainThread->th, p_th);
+	return gcnew PrologEngine(th);
+}
+
+#endif

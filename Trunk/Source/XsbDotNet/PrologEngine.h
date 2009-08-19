@@ -33,30 +33,28 @@ using namespace System::Security;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 
-namespace XsbDotNet {
-
+namespace XsbDotNet
+{
     public delegate bool PrologPredicate(cli::array<PrologTerm ^> ^arguments);
 
     [UnmanagedFunctionPointer(CallingConvention::Cdecl)]
     delegate bool PrologCallback(prolog_term term);
 
-    public ref class XsbPrologEngine
+    public ref class PrologEngine
     {
     private:
 #ifdef MULTI_THREAD
         th_context *th;
-        static th_context *main_th;
-#else
-        static XsbPrologEngine ^engine;
-        XsbPrologEngine();
 #endif
         IDictionary<System::String ^, PrologPredicate ^> ^managedPredicates;
         PrologCallback ^callback;
+	private:
+		PrologEngine(CTXTdecl);
         bool CallManagedPredicate(prolog_term term);
+		static PrologEngine ^mainThread;
     public:
 #ifdef MULTI_THREAD
-        XsbPrologEngine();
-        ~XsbPrologEngine();
+        ~PrologEngine();
 #endif
         XsbDotNet::PrologTerm ^ CreateTerm();
         XsbDotNet::PrologTerm ^ CreateTerm(System::String ^symbol);
@@ -66,18 +64,16 @@ namespace XsbDotNet {
         QueryHandle ^ Query(System::String ^query);
         QueryHandle ^ Query(XsbDotNet::PrologTerm ^query);
         void RegisterManagedPredicate(System::String ^name, PrologPredicate ^predicate);
+
+		static void InitXsb(System::String ^xsbHome);
         static void CloseXsb();
-#ifndef MULTI_THREAD
-        static property XsbPrologEngine ^ Instance {
-            XsbPrologEngine ^ get() {
-                if (engine == nullptr)
-                {
-                    engine = gcnew XsbPrologEngine();
-                }
-                return engine;
-            }
-        }
+#ifdef MULTI_THREAD
+		static PrologEngine ^ CreateThread();
 #endif
+
+        static property PrologEngine ^ MainThread {
+			PrologEngine ^ get() { return mainThread; }
+        }
     };
 
 }

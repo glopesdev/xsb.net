@@ -297,6 +297,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\PrologEngine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PrologTerm.cpp"
 				>
 			</File>
@@ -334,10 +338,6 @@
 			</File>
 			<File
 				RelativePath=".\XsbException.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\XsbPrologEngine.cpp"
 				>
 			</File>
 		</Filter>
@@ -380,6 +380,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PrologEngine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PrologTerm.h"
 				>
 			</File>
@@ -393,10 +397,6 @@
 			</File>
 			<File
 				RelativePath=".\XsbException.h"
-				>
-			</File>
-			<File
-				RelativePath=".\XsbPrologEngine.h"
 				>
 			</File>
 		</Filter>

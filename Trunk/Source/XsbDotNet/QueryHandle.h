@@ -26,8 +26,8 @@ using namespace System::Collections::Generic;
 
 #include "PrologAnswer.h"
 
-namespace XsbDotNet {
-
+namespace XsbDotNet
+{
     public ref class QueryHandle
         : public IEnumerable<PrologAnswer ^>
     {
