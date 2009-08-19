@@ -25,8 +25,8 @@
 
 void XsbDotNet::UnitTests::PrologTermTests::SetUp()
 {
-    //engine = gcnew XsbDotNet::XsbPrologEngine();
-    engine = XsbDotNet::XsbPrologEngine::Instance;
+    engine = gcnew XsbDotNet::XsbPrologEngine();
+    //engine = XsbDotNet::XsbPrologEngine::Instance;
 }
 
 void XsbDotNet::UnitTests::PrologTermTests::TearDown()
@@ -58,14 +58,14 @@ void XsbDotNet::UnitTests::PrologTermTests::PrologTermBindings()
 
 void XsbDotNet::UnitTests::PrologTermTests::PrologCommands()
 {
-    XsbDotNet::PrologTerm ^term = engine->CreateTerm("consult", 1);
+    XsbDotNet::PrologTerm ^term = engine->CreateTerm("ensure_loaded", 1);
     term->GetFunctorArgument(1)->BindAtom("basics");
     bool res = engine->Command(term);
 }
 
 void XsbDotNet::UnitTests::PrologTermTests::PrologQueries()
 {
-    engine->Command("consult(basics).");
+    engine->Command("ensure_loaded(basics).");
     QueryHandle ^result = engine->Query("member(X,[1,2,3]).");
     for each (XsbDotNet::PrologAnswer ^answer in result)
     {

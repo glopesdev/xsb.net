@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;C:\Tools\pthreads\Pre-built\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;D:\Tools\pthreads\Pre-built.1\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
@@ -62,7 +62,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit) xsb.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\bin&quot;"
+				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\lib&quot;"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				RandomizedBaseAddress="1"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;C:\Tools\pthreads\Pre-built\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;D:\Tools\pthreads\Pre-built.1\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -137,7 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit) xsb.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\bin&quot;"
+				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\lib&quot;"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -191,7 +191,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;C:\Tools\pthreads\Pre-built\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(XSB_HOME)\emu&quot;;&quot;$(XSB_HOME)\config\$(XSB_CONFIG)&quot;;&quot;D:\Tools\pthreads\Pre-built.1\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -211,7 +211,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(NoInherit) xsb.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\bin&quot;"
+				AdditionalLibraryDirectories="&quot;$(XSB_HOME)\config\$(XSB_CONFIG)\lib&quot;"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

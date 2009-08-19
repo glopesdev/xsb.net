@@ -40,15 +40,18 @@ XsbPrologEngine::XsbPrologEngine()
         managedPredicates = gcnew Dictionary<System::String ^, PrologPredicate ^>();
         System::String ^xsb_home = System::Environment::GetEnvironmentVariable("XSB_HOME");
         System::IntPtr cstring = Marshal::StringToHGlobalAnsi(xsb_home);
-        char *argv[1] = { (char *)cstring.ToPointer() };
-        if (xsb_init(1, argv) != XSB_SUCCESS)
-        {
-            throw gcnew XsbException(
-                "Failed to initialize XSB engine.\n" +
-                "Error code: " + gcnew System::String(xsb_get_init_error_type()) + "\n" +
-                "Error message: " + gcnew System::String(xsb_get_init_error_message()));
-        }
-        Marshal::FreeHGlobal(cstring);
+		char *argv[1] = { (char *)cstring.ToPointer() };
+		try
+		{
+			if (xsb_init(1, argv) != XSB_SUCCESS)
+			{
+				throw gcnew XsbException(
+					"Failed to initialize XSB engine.\n" +
+					"Error code: " + gcnew System::String(xsb_get_init_error_type()) + "\n" +
+					"Error message: " + gcnew System::String(xsb_get_init_error_message()));
+			}
+		}
+		finally { Marshal::FreeHGlobal(cstring); }
 #ifdef MULTI_THREAD
         main_th = xsb_get_main_thread();
     }
