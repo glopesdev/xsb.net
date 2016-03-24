@@ -13,4 +13,4 @@ In order to have XSBDotNet up and running:
 4. Include XsbDotNet.dll as a reference in your project and make sure to call the
 InitXsb() method with the full path to XSB's root directory.
 
-Post any difficulties and issues on the bug tracker at http://sourceforge.net/projects/xsbdotnet/.
+Post any difficulties and issues on the bug tracker at https://github.com/glopesdev/xsb.net.
